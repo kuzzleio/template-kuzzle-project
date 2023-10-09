@@ -1,0 +1,10 @@
+name: Backend - Functional Tests
+description: Run Functional Tests for backend
+runs:
+  using: "composite"
+  steps:
+    - name: Run backend functional test
+      shell: bash
+      run: |
+           npm ci
+           npm run test
