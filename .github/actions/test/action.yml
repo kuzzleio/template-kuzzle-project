@@ -1,9 +1,9 @@
-name: Backend - Functional Tests
-description: Run Functional Tests for backend
+name: Tests
+description: Run Tests
 runs:
   using: "composite"
   steps:
-    - name: Run backend functional test
+    - name: Run test
       shell: bash
       run: |
            npm ci
