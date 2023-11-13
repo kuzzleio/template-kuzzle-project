@@ -12,7 +12,7 @@
   "main": "app.ts",
   "license": "Apache-2.0",
   "dependencies": {
-    "kuzzle": "2.26.2",
+    "kuzzle": "2.27.1",
     "kuzzle-plugin-prometheus": "4.2.0"
   },
   "devDependencies": {
