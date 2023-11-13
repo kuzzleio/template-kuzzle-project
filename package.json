@@ -5,7 +5,7 @@
   "author": "",
   "scripts": {
     "build": "tsc --build tsconfig.json",
-    "dev": "NODE_ENV=development npx ergol app.ts -c ergol.config.json",
+    "dev": "NODE_ENV=development ergol app.ts -c ergol.config.json",
     "test": "jest --verbose --passWithNoTests",
     "lint": "eslint ./lib --ext .ts --config .eslintrc.json"
   },
