@@ -1,5 +1,6 @@
 import { Backend } from "kuzzle";
 import { PrometheusPlugin } from "kuzzle-plugin-prometheus";
+import PluginPassportOAuth from "kuzzle-plugin-auth-passport-oauth";
 
 export type MyApplicationConfig = {
   someValue: string;
@@ -12,7 +13,8 @@ export type MyApplicationConfig = {
 export class MyApplication extends Backend {
   public configuration: MyApplicationConfig;
   private prometheusPlugin = new PrometheusPlugin();
-
+  private passportOauthPlugin = new PluginPassportOAuth();
+  
   get appConfig() {
     return this.config.content.application as MyApplicationConfig;
   }
@@ -28,6 +30,8 @@ export class MyApplication extends Backend {
     }
 
     this.plugin.use(this.prometheusPlugin);
+    this.plugin.use(this.passportOauthPlugin);
+
   }
 
   async start() {
