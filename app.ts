@@ -1,8 +1,30 @@
 import { MyApplication } from "./lib/MyApplication";
+import { CustomUser } from './lib/local-users-handling/validate-users';
+import { addPipeBeforeCreateRestrictedUser } from './lib/local-users-handling/pipeCreateRestrictedUser';
+import { addPipeAfterCreateRestrictedUser } from './lib/local-users-handling/pipeCreateRestrictedUser';
 
+
+const fs = require('fs');
+
+const key_secret = JSON.parse(fs.readFileSync('./.env.json', 'utf-8'));
+
+// const key_secret = require("./.env.json");
+
+// console.log(key_secret.clientsecret)
+
+
+console.log(key_secret.clientsecret)
 const app = new MyApplication();
 
-app.start();
+
+addPipeBeforeCreateRestrictedUser(app);
+//addPipeBeforeCreateUser(app);
+addPipeAfterCreateRestrictedUser(app);
+
+
+const customUser = new CustomUser(app);
+app.controller.use(customUser);
+
 
 app.config.content.plugins['passport-oauth'] = {
   // List of the providers you want to use with passport
@@ -13,7 +35,7 @@ app.config.content.plugins['passport-oauth'] = {
       // Credentials provided by the provider  
       "credentials": {
         "clientID": "248704848225-abvib4t5sh7jpolqurk39vcioklfdgo2.apps.googleusercontent.com",
-        "clientSecret": "",
+        "clientSecret": key_secret.clientsecret,
       //  "callbackURL": "http://149.50.128.59:7512/_login/google",
         "callbackURL": "http://localhost:1593/_login/app",
         "profileFields": ["id", "name", "picture", "email", "gender"]
@@ -42,3 +64,8 @@ app.config.content.plugins['passport-oauth'] = {
     "default"
   ]
 }
+
+app.config.content.security.restrictedProfileIds = ["default"]
+
+
+app.start();
