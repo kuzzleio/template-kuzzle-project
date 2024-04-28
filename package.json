@@ -14,6 +14,7 @@
   "dependencies": {
     "kuzzle": "2.27.1",
     "kuzzle-plugin-auth-passport-oauth": "^5.0.4",
+    "kuzzle-plugin-hermes-messenger": "^1.0.0",
     "kuzzle-plugin-prometheus": "4.2.0"
   },
   "devDependencies": {
