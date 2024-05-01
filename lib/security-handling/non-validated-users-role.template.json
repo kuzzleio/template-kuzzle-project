@@ -1,0 +1,9 @@
+{
+  "controllers": {
+    "custom-user": {
+      "actions": {
+        "validateUser": true
+      }
+    }
+  }
+}

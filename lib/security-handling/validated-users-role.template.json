@@ -1,0 +1,10 @@
+{
+  "controllers": {
+    "auth": {
+      "actions": {
+        "login": true,
+        "logout": true
+      }
+    }
+  }
+}
