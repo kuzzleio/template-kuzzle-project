@@ -48,7 +48,7 @@ app.config.content.plugins["passport-oauth"] = {
   defaultProfiles: ["default"],
 };
 
-app.config.content.security.restrictedProfileIds = ["default"];
+app.config.content.security.restrictedProfileIds = ["profile-non-validated-users"];
 
 // Import roles and profiles from validated and non validated users (this should be implemented in an external .ts file)
 const roleNonValidatedUsers = require("./lib/security-handling/non-validated-users-role.template.json");
@@ -56,12 +56,12 @@ const roleValidatedUsers = require("./lib/security-handling/validated-users-role
 const profileNonValidatedUsers = require("./lib/security-handling/non-validated-users-profile.template.json");
 const profileValidatedUsers = require("./lib/security-handling/validated-users-profile.template.json");
 
-app.start().then(() => {
-  app.sdk.security.createOrReplaceRole("role-non-validated-users", roleNonValidatedUsers);
-  app.sdk.security.createOrReplaceRole("role-validated-users", roleValidatedUsers);
-}).then(() => {
-  app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
-  app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
+app.start().then(
+    async function (){
+    await app.sdk.security.createOrReplaceRole("role-non-validated-users", roleNonValidatedUsers);
+    await app.sdk.security.createOrReplaceRole("role-validated-users", roleValidatedUsers);
+    await app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
+    await app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
 }).then(
-  () => {app.configureSmtp(env.smtpConfig)
+    () => {app.configureSmtp(env.smtpConfig)
 });
