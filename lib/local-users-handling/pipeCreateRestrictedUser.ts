@@ -10,10 +10,18 @@ const validateEmail = (email) => {
     );
 };
 */
+
+const rand = () => {
+    return Math.random().toString(36).substr(2);
+};
+  
+const token = () => {
+    return rand() + rand() + rand() + rand() + rand() + rand();
+};
+
 export function addPipeBeforeCreateRestrictedUser(app: Backend) {
-//    console.log("Credentials of new restricted user", JSON.parse(request));
     app.pipe.register('security:beforeCreateRestrictedUser', async (request: KuzzleRequest) => {
-	console.log("Credentials of new restricted user without parse", request.input.body.credentials);
+    	console.log("Credentials of new restricted user without parse", request.input.body.credentials);
         return request
     });
 }
@@ -22,10 +30,10 @@ export function addPipeBeforeCreateRestrictedUser(app: Backend) {
 export function addPipeAfterCreateRestrictedUser(app: Backend) {
     app.pipe.register('security:afterCreateRestrictedUser', async (request: KuzzleRequest) => {
         const user_id = request.result._id;
-        /* app.sdk.security.updateUser(user_id, {
-            "houses": [],
-            "devices": []
-        });*/
+        // Add "ValidationToken" field to new restricted user
+        app.sdk.security.updateUser(user_id, {
+            "ValidationToken": token()
+        });
         return request;
     });
 }
