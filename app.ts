@@ -26,7 +26,7 @@ app.config.content.plugins["passport-oauth"] = {
       credentials: {
         clientID:
           "248704848225-abvib4t5sh7jpolqurk39vcioklfdgo2.apps.googleusercontent.com",
-        clientSecret: env.clientsecret,
+        clientSecret: env.oauth.clientsecret,
         //  "callbackURL": "http://149.50.128.59:7512/_login/google",
         callbackURL: "http://localhost:1593/_login/app",
         profileFields: ["id", "name", "picture", "email", "gender"],
@@ -62,6 +62,8 @@ app.start().then(
     await app.sdk.security.createOrReplaceRole("role-validated-users", roleValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
-}).then(
-    () => {app.configureSmtp(env.smtpConfig)
-});
+}).then(() => {
+  if(env.smtpConfig.enable)
+    app.configureSmtp(env.smtpConfig);
+  }
+);
