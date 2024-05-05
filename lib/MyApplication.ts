@@ -43,6 +43,7 @@ export class MyApplication extends Backend {
   }
 
   async configureSmtp(config) {
+    console.log(config);
     await this.sdk.query({
       account: config.account,
       action: "addAccount",

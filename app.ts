@@ -66,7 +66,7 @@ app.start().then(async function (){
     await app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
     if(env.smtpConfig){ 
-      if (env.smtpConfig.enabled){
+      if (env.smtpConfig.enable){
         app.configureSmtp(env.smtpConfig);
       }
     } else {
