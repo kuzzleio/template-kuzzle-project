@@ -2,6 +2,11 @@ import { Controller, KuzzleRequest, Backend, BadRequestError, InternalError, For
 
 const jwt = require('jsonwebtoken');
 
+const token = (username : String) => {
+    let t = jwt.sign({username: username, expiration: Date.now() + 3600*1000}, "shhhhh");
+    return t;
+};
+
 export class CustomUser extends Controller {
   constructor (app: Backend) {
     super(app);
@@ -15,17 +20,77 @@ export class CustomUser extends Controller {
             { verb: 'get', path: 'custom-user/validate' },
           ]
         },
+        sendValidationMail: {
+          handler: this.sendValidationMail,
+          http:[
+            { verb: 'get', path: 'custom-user/send-validation-mail' },
+          ]
+        },
       }
     };
   }
   
+  async sendValidationMail(request: KuzzleRequest){
+    const {email} = request.input.args;
+    if (!email){
+      throw new BadRequestError("Invalid user email.");
+    }
+    const response = await this.app.sdk.query( {
+       "controller": "security",
+       "action": "searchUsersByCredentials",
+       "strategy": "local",
+       "body": {
+         "query": {
+           "bool": {
+             "must": [
+               {
+                 "term": {
+                   "username": "pablo7fonovich@gmail.com"
+                 }
+               }
+             ]
+           }
+        }
+      }
+    });
+
+    const result = response.result;
+    if (result && result.total > 0)
+    {
+      var id = result.hits[0].kuid;
+
+      const user = await this.app.sdk.security.getUser(id);
+
+      if (user._source.profileIds.includes("profile-non-validated-users")){
+        let t = token(id);
+        this.app.sdk.security.updateUser(id, {
+            "ValidationToken": t 
+        });
+        let url = "http://localhost:7512/_/custom-user/validate?code="+t;
+        this.app.sdk.query( {
+          "controller": "hermes/smtp",
+          "action": "sendEmail",
+          "account": "contact",
+          "body": {
+            "to": [
+              email
+            ],
+            "subject": "Validate your TeamMake user!",
+            "html": "Validate your TeamMake user by following the link: <br>" + url
+          }
+        });
+      }
+
+    } else {
+      throw new BadRequestError("Not registered user mail.")
+    }
+
+  }
+
+
   async validateUser(request: KuzzleRequest){
-    
-    // const inputUsernameToken = request.input.args;
-    // Decode token:
-    // const username, token = jwtdecode(input.token);
     try {
-        const {code} = request.input.args
+        const {code} = request.input.args;
         if(!code){
           throw new BadRequestError("Invalid request.");
         }
