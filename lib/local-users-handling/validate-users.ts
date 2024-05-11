@@ -1,4 +1,5 @@
 import { Controller, KuzzleRequest, Backend, BadRequestError, InternalError, ForbiddenError} from 'kuzzle';
+import fs from 'fs';
 
 const jwt = require('jsonwebtoken');
 
@@ -59,14 +60,18 @@ export class CustomUser extends Controller {
     {
       var id = result.hits[0].kuid;
 
-      const user = await this.app.sdk.security.getUser(id);
 
+      const user = await this.app.sdk.security.getUser(id);
       if (user._source.profileIds.includes("profile-non-validated-users")){
         let t = token(id);
         this.app.sdk.security.updateUser(id, {
             "ValidationToken": t 
         });
         let url = "http://localhost:7512/_/custom-user/validate?code="+t;
+
+        const user = await this.app.sdk.security.getUser(id);
+        let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
+        html = html.replace("{{link}}", url);
         this.app.sdk.query( {
           "controller": "hermes/smtp",
           "action": "sendEmail",
@@ -76,7 +81,7 @@ export class CustomUser extends Controller {
               email
             ],
             "subject": "Validate your TeamMake user!",
-            "html": "Validate your TeamMake user by following the link: <br>" + url
+            "html": html 
           }
         });
       }
@@ -117,7 +122,15 @@ export class CustomUser extends Controller {
     } catch (e) {
       throw new BadRequestError("Invalid request")
     }
-    return
+    request.response.configure({
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      format: 'raw',
+      status: 200
+    });
+    let html = fs.readFileSync('html/validated-user.html', 'utf-8');
+    return html;
   }
 
 }
