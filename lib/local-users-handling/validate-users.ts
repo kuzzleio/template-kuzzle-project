@@ -1,3 +1,4 @@
+import { MyApplication } from "../MyApplication";
 import { Controller, KuzzleRequest, Backend, BadRequestError, InternalError, ForbiddenError} from 'kuzzle';
 import fs from 'fs';
 
@@ -67,7 +68,8 @@ export class CustomUser extends Controller {
         this.app.sdk.security.updateUser(id, {
             "ValidationToken": t 
         });
-        let url = "http://localhost:7512/_/custom-user/validate?code="+t;
+	let myApp = this.app as MyApplication;
+        let url = "http://"+myApp.configuration.hostAddress+":7512/_/custom-user/validate?code="+t;
 
         const user = await this.app.sdk.security.getUser(id);
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');

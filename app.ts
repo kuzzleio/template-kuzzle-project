@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import { MyApplication } from "./lib/MyApplication";
+import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
@@ -7,8 +7,14 @@ import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pip
 import fs from "fs";
 
 const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
-const app = new MyApplication();
-
+var hostAddress = "localhost";
+if (env.config && env.config.hostAddress){
+	hostAddress = env.config.hostAddress;	
+}
+const config: MyApplicationConfig = {
+    hostAddress: hostAddress 
+};
+const app = new MyApplication(config);
 addPipeBeforeCreateRestrictedUser(app);
 //addPipeBeforeCreateUser(app);
 addPipeAfterCreateRestrictedUser(app);
