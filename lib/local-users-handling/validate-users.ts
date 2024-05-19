@@ -28,10 +28,34 @@ export class CustomUser extends Controller {
             { verb: 'get', path: 'custom-user/send-validation-mail' },
           ]
         },
+	authCode: {
+	  handler: this.authCode,
+	  http:[
+            { verb: 'get', path: 'custom-user/auth-code' }
+	  ]
+	}
       }
     };
   }
-  
+ 
+  async authCode(request: KuzzleRequest){
+     console.log(request.input.args);
+     const {code} =  request.input.args;
+     request.response.configure({
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      format: 'raw',
+      status: 200
+    });
+    let myApp = this.app as MyApplication;
+    let url = "exp://"+myApp.configuration.hostAddress+":8081/--/Test?code="+code;
+    let html = fs.readFileSync('html/validated-user.html', 'utf-8');
+    html = html.replace("{{link}}", url);
+    return html;
+ 
+  }
+
   async sendValidationMail(request: KuzzleRequest){
     const {email} = request.input.args;
     if (!email){
@@ -70,10 +94,10 @@ export class CustomUser extends Controller {
         });
 	let myApp = this.app as MyApplication;
         let url = "http://"+myApp.configuration.hostAddress+":7512/_/custom-user/validate?code="+t;
-
         const user = await this.app.sdk.security.getUser(id);
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
         html = html.replace("{{link}}", url);
+	html = html.replace("{{date}}", (new Date()).toString());
         this.app.sdk.query( {
           "controller": "hermes/smtp",
           "action": "sendEmail",
@@ -115,9 +139,7 @@ export class CustomUser extends Controller {
               profileIds: ['profile-validated-users']
             }
             this.app.sdk.security.updateUser(username, body);
-          } else{
-            throw new BadRequestError("Error in user validation. Maybe the user is already validated?")
-          }
+          } 
         } else{
           throw new BadRequestError("Invalid token")
         }
@@ -131,7 +153,10 @@ export class CustomUser extends Controller {
       format: 'raw',
       status: 200
     });
+    let myApp = this.app as MyApplication;
+    let url = "exp://"+myApp.configuration.hostAddress+":8081/--/Test";
     let html = fs.readFileSync('html/validated-user.html', 'utf-8');
+    html = html.replace("{{link}}", url);
     return html;
   }
 

@@ -35,7 +35,7 @@ if (env.oauth) {
             "248704848225-abvib4t5sh7jpolqurk39vcioklfdgo2.apps.googleusercontent.com",
           clientSecret: env.oauth.clientsecret,
           //  "callbackURL": "http://149.50.128.59:7512/_login/google",
-          callbackURL: "http://localhost:1593/_login/app",
+          callbackURL: "http://localhost:7512/_/custom-user/auth-code",
           profileFields: ["id", "name", "picture", "email", "gender"],
         },
         // Attributes you want to persist in the user credentials object if the user doesn't exist
