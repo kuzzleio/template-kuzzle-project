@@ -1,12 +1,10 @@
-version: "3"
-
 services:
   api:
-    image: kuzzleio/kuzzle-runner:18
-    command: sh /var/app/start.sh api
-    volumes:
-      - .:/var/app
-      - ~/.npmrc:/root/.npmrc
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev-deps
+    command: pnpm watch
     depends_on:
       redis:
         condition: service_healthy
@@ -14,10 +12,6 @@ services:
         condition: service_healthy
     ports:
       - "7512:7512"
-      - "7511:7511"
-      - "7510:7510"
-      - "9229:9229"
-      - "1883:1883"
     environment:
       - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
       - kuzzle_services__storageEngine__commonMapping__dynamic=true
@@ -30,6 +24,15 @@ services:
       timeout: 5s
       interval: 5s
       retries: 30
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./lib
+          target: /app/lib
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   redis:
     image: redis:5

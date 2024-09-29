@@ -36,7 +36,7 @@ Check out our [support plans](https://kuzzle.io/pricing/).
 ## Installation and run
 
 Requirement:
- - Node.js = 18
+ - Node.js = 20
  - NPM = 10.1.0
  - Docker
  - Docker-Compose
@@ -44,38 +44,20 @@ Requirement:
 # Usage
 
 ```bash
-docker compose up -d
+docker compose watch
 ```
 
 ## Use the framework
 
-Your first Kuzzle application is inside the `app.ts` file.
-
-For example, you can add a new [API Controller](https://docs.kuzzle.io/core/2/guides/develop-on-kuzzle/api-controllers):
+Your first Kuzzle application is inside the `app.ts` file. This will be the entry point of your application.
 
 ```ts
-import { Backend } from 'kuzzle';
+import { MyApplication } from "./lib/MyApplication";
 
-const app = new Backend('playground');
+const app = new MyApplication();
 
-app.controller.register('greeting', {
-  actions: {
-    sayHello: {
-      handler: async request => `Hello, ${request.input.args.name}`
-    }
-  }
-});
-
-app.start()
-  .then(() => {
-    app.log.info('Application started');
-  })
-  .catch(console.error);
+app.start();
 ```
-
-Now try to call your new API action by:
- - opening the generated URL in your browser: http://localhost:7512/_/greeting/say-hello?name=Yagmur
- - using Kourou: `npx kourou greeting:sayHello --arg name=Yagmur`
 
 Learn how to [Write an Application](https://docs.kuzzle.io/core/2/guides/getting-started/write-application/).
 
@@ -103,7 +85,7 @@ Our teams will be able to meet your needs in terms of expertise and multi-techno
 * Follow us on [twitter](https://twitter.com/kuzzleio) to get latest news
 * Register to our monthly [newsletter](http://eepurl.com/bxRxpr) to get highlighed news
 * Visit our [blog](https://blog.kuzzle.io/) to be informed about what we are doing
-* Come chat with us on [Discord](http://join.discord.kuzzle.io)
+* Come chat with us on [Discord](https://join.discord.kuzzle.io)
 * Ask technical questions on [stack overflow](https://stackoverflow.com/search?q=kuzzle)
 
 ## License

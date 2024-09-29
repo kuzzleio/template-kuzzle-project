@@ -1,34 +1,37 @@
-# Builder stage
-FROM kuzzleio/kuzzle-runner:18 AS builder
-
-WORKDIR /var/app
-
-COPY . .
-
-
-RUN npm install
-RUN npm run build
-RUN npm prune --production
-
-# Final image
-FROM node:18-bullseye-slim
+FROM kuzzleio/kuzzle-runner:20 AS base
 
 ARG KUZZLE_ENV="local"
-ARG KUZZLE_VAULT_KEY=""
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+COPY . /app
+WORKDIR /app
+
+FROM base AS dev-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile && pnpm run build
+
+FROM node:20-slim AS prod
+
+WORKDIR /app
 
 # Uncomment if you want to use the Kuzzle Vault
 # See https://docs.kuzzle.io/core/2/guides/advanced/secrets-vault
+# ARG KUZZLE_VAULT_KEY
 # ENV KUZZLE_VAULT_KEY=$KUZZLE_VAULT_KEY
 # ENV KUZZLE_SECRETS_FILE="/var/app/secrets.enc.json"
+ARG KUZZLE_ENV="local"
 
-ENV NODE_ENV=production
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/environments/${KUZZLE_ENV}/kuzzlerc /app/.kuzzlerc
 
-COPY --from=builder /var/app/dist /var/app
-COPY --from=builder /var/app/node_modules /var/app/node_modules
-COPY --from=builder /var/app/package.json /var/app/package.json
-COPY --from=builder /var/app/package-lock.json /var/app/package-lock.json
-COPY --from=builder /var/app/environments/${KUZZLE_ENV}/kuzzlerc /var/app/.kuzzlerc
+EXPOSE 7512
 
-WORKDIR /var/app
-
-CMD [ "node", "app.js" ]
+CMD [ "node", "dist/app.js" ]

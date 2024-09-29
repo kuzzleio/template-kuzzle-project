@@ -11,6 +11,7 @@ Reflect.defineProperty(global, "app", {
 
 describe("MyApplication", () => {
   const instance = new MyApplication(appSettings as MyApplicationConfig);
+
   describe("constructor", () => {
     it("should instantiate a MyApplication", () => {
       expect(instance.plugin.get("prometheus")).toBeInstanceOf(Plugin);

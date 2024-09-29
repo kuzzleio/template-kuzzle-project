@@ -1,0 +1,15 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript"
+    },
+    "target": "es2015"
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
