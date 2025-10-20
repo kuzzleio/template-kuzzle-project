@@ -7,21 +7,22 @@
     "build": "tsc --build tsconfig.json",
     "test": "vitest run --fileParallelism false",
     "dev": "NODE_ENV=development tsx watch app.ts",
-    "lint": "eslint ./lib --ext .ts --config .eslintrc.json"
+    "lint": "eslint ./lib --ext .ts --config .eslintrc.json",
+    "test:types": "tsc --noEmit"
   },
   "main": "app.ts",
   "license": "Apache-2.0",
   "dependencies": {
-    "kuzzle": "2.43.2",
+    "kuzzle": "2.48.0",
     "kuzzle-plugin-prometheus": "4.2.1"
   },
   "devDependencies": {
-    "@types/node": "22",
+    "@types/node": "24",
     "eslint-plugin-kuzzle": "0.0.14",
     "ts-node": "10.9.2",
-    "tsx": "4.19.4",
+    "tsx": "4.20.6",
     "typescript": "5.4.*",
-    "vitest": "3.2.3"
+    "vitest": "3.2.4"
   },
   "files": [
     "dist/**/*"

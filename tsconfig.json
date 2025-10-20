@@ -1,37 +1,35 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "outDir": "dist",
-    "lib": [
-      "ES6",
-      "DOM"
-    ],
-    "declaration": true,
     "listEmittedFiles": true,
-    "module": "commonjs",
-    "target": "es2020",
-    "moduleResolution": "node",
-    "sourceMap": true,
     "baseUrl": ".",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
     "paths": {
-      "lib/*": [
+      "#*": [
         "lib/*"
       ],
-      "tests/*": [
-        "tests/*"
+      "#core/*": [
+        "lib/core/*"
       ]
     },
-    "skipLibCheck": true
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "target": "ES6",
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "types": ["vitest/globals", "node"]
   },
-  "rootDir": "lib/",
+  "rootDir": ".",
   "include": [
     "app.ts",
     "lib/**/*.ts",
     "tests/**/*.ts",
     "vitest.config.ts"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }

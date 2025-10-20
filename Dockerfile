@@ -6,12 +6,11 @@ WORKDIR /var/app
 COPY . .
 
 
-RUN npm install
-RUN npm run build
-RUN npm prune --production
+RUN npm install \
+  && npm run build \
+  && npm install --omit=dev
 
-# Final image
-FROM node:22-bullseye-slim
+FROM node:22-bookworm-slim
 
 ARG KUZZLE_ENV="local"
 ARG KUZZLE_VAULT_KEY=""
@@ -27,6 +26,11 @@ COPY --from=builder /var/app/dist /var/app
 COPY --from=builder /var/app/node_modules /var/app/node_modules
 COPY --from=builder /var/app/package.json /var/app/package.json
 COPY --from=builder /var/app/package-lock.json /var/app/package-lock.json
+
+# KUZZLE_ENV is an ARG that can be given by the CI
+# Or by using --build-arg "KUZZLE_ENV=local|main"
+# See https://docs.kuzzle.io/core/2/guides/advanced/configuration/
+# To know of the kuzzlerc file is working
 COPY --from=builder /var/app/environments/${KUZZLE_ENV}/kuzzlerc /var/app/.kuzzlerc
 
 WORKDIR /var/app
