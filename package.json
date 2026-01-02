@@ -13,16 +13,16 @@
   "main": "app.ts",
   "license": "Apache-2.0",
   "dependencies": {
-    "kuzzle": "2.48.0",
+    "kuzzle": "2.50.3",
     "kuzzle-plugin-prometheus": "4.2.1"
   },
   "devDependencies": {
     "@types/node": "24",
-    "eslint-plugin-kuzzle": "0.0.14",
+    "eslint-plugin-kuzzle": "0.0.15",
     "ts-node": "10.9.2",
-    "tsx": "4.20.6",
+    "tsx": "4.21.0",
     "typescript": "5.4.*",
-    "vitest": "3.2.4"
+    "vitest": "4.0.16"
   },
   "files": [
     "dist/**/*"

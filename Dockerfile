@@ -1,5 +1,5 @@
 # Builder stage
-FROM kuzzleio/kuzzle-runner:22 AS builder
+FROM kuzzleio/kuzzle-runner:24-trixie-slim AS builder
 
 WORKDIR /var/app
 
@@ -10,7 +10,7 @@ RUN npm install \
   && npm run build \
   && npm install --omit=dev
 
-FROM node:22-bookworm-slim
+FROM node:24-trixie-slim
 
 ARG KUZZLE_ENV="local"
 ARG KUZZLE_VAULT_KEY=""
@@ -30,7 +30,7 @@ COPY --from=builder /var/app/package-lock.json /var/app/package-lock.json
 # KUZZLE_ENV is an ARG that can be given by the CI
 # Or by using --build-arg "KUZZLE_ENV=local|main"
 # See https://docs.kuzzle.io/core/2/guides/advanced/configuration/
-# To know of the kuzzlerc file is working
+# To know how the kuzzlerc file is working
 COPY --from=builder /var/app/environments/${KUZZLE_ENV}/kuzzlerc /var/app/.kuzzlerc
 
 WORKDIR /var/app

@@ -1,6 +1,6 @@
 services:
   kuzzle:
-    image: kuzzleio/kuzzle-runner:22
+    image: kuzzleio/kuzzle-runner:24-trixie-slim
     command: sh /var/app/start.sh api
     volumes:
       - .:/var/app

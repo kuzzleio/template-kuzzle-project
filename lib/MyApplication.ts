@@ -15,7 +15,7 @@ export type MyApplicationConfig = {
 export class MyApplication extends Backend {
   public configuration: MyApplicationConfig;
   private readonly modules: Module[] = [];
-  private prometheusPlugin = new PrometheusPlugin();
+  private readonly prometheusPlugin = new PrometheusPlugin();
 
   get appConfig() {
     return this.config.content.application as MyApplicationConfig;
@@ -25,7 +25,7 @@ export class MyApplication extends Backend {
     super("my-application");
 
     this.initConfig(config);
-    this.regesterPlugins();
+    this.registerPlugins();
     this.registerModules();
   }
 
@@ -46,7 +46,7 @@ export class MyApplication extends Backend {
     }
   }
 
-  regesterPlugins() {
+  registerPlugins() {
     this.plugin.use(this.prometheusPlugin);
   }
 
