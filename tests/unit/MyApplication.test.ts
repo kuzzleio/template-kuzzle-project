@@ -3,10 +3,17 @@ import { Plugin } from "kuzzle";
 import { appSettings } from "./utils";
 
 // We need to supress the singleton behavior of the Backend class for unit testing purpose
-Reflect.defineProperty(global, "app", {
-  set() {
-    /* Do nothing */
+Reflect.defineProperty(globalThis, "kuzzle", {
+  get() {
+    return {
+      id: "toto",
+    };
   },
+});
+
+Reflect.defineProperty(globalThis, "app", {
+  value: {},
+  writable: true,
 });
 
 describe("MyApplication", () => {
