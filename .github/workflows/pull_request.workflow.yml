@@ -3,7 +3,10 @@ name: Pull request checks
 on: [pull_request]
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 24
+
+permissions:
+  contents: read
 
 jobs:
   lint:
@@ -20,7 +23,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
-      - uses: ./.github/actions/lint
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
 
   test-unit:
     name: Test unit
@@ -37,7 +44,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
-      - uses: ./.github/actions/test
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
 
   test-types:
     name: Test types
@@ -51,8 +62,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
       - name: Test project
         run: |
-          npm install
+          npm ci
           npm run test:types

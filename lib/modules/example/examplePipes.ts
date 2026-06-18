@@ -1,4 +1,4 @@
-import { MyApplication } from "#MyApplication";
+import { MyApplication } from "../../MyApplication.js";
 import { KuzzleRequest } from "kuzzle";
 
 export class ExamplePipes {

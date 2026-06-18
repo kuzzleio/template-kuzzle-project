@@ -1,4 +1,4 @@
-// export all the decorators from the decorators folder
-export { ApiController } from "#utils/decorators/ApiController";
-export { ApiRoute } from "#utils/decorators/ApiRoute";
-export { ApiAction } from "#utils/decorators/ApiAction";
+// Export all decorators from this folder.
+export { ApiController } from "./ApiController.js";
+export { ApiRoute } from "./ApiRoute.js";
+export { ApiAction } from "./ApiAction.js";

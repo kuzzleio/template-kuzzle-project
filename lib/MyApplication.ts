@@ -1,8 +1,8 @@
 import { Backend } from "kuzzle";
 import { PrometheusPlugin } from "kuzzle-plugin-prometheus";
 
-import { Module } from "#/modules/shared/Module";
-import { ExampleModule } from "#modules/example/exampleModule";
+import { Module } from "./modules/shared/Module.js";
+import { ExampleModule } from "./modules/example/exampleModule.js";
 
 export type MyApplicationConfig = {
   someValue: string;
@@ -29,7 +29,7 @@ export class MyApplication extends Backend {
     this.registerModules();
   }
 
-  initConfig(config: MyApplicationConfig) {
+  initConfig(config?: MyApplicationConfig) {
     if (config) {
       this.configuration = config;
     } else {

@@ -10,19 +10,20 @@
     "lint": "eslint ./lib --ext .ts --config .eslintrc.json",
     "test:types": "tsc --noEmit"
   },
-  "main": "app.ts",
+  "type": "module",
+  "main": "dist/app.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "kuzzle": "2.54.4",
+    "kuzzle": "2.55.0",
     "kuzzle-plugin-prometheus": "4.2.1"
   },
   "devDependencies": {
     "@types/node": "24",
     "eslint-plugin-kuzzle": "0.0.15",
     "ts-node": "10.9.2",
-    "tsx": "4.21.0",
+    "tsx": "4.22.4",
     "typescript": "5.4.*",
-    "vitest": "4.1.5"
+    "vitest": "4.1.9"
   },
   "files": [
     "dist/**/*"

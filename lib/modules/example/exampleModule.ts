@@ -1,6 +1,6 @@
-import { Module } from "#/modules/shared/Module";
-import { ExampleController } from "#/modules/example/exampleController";
-import { ExamplePipes } from "#/modules/example/examplePipes";
+import { Module } from "../shared/Module.js";
+import { ExampleController } from "./exampleController.js";
+import { ExamplePipes } from "./examplePipes.js";
 
 export class ExampleModule extends Module {
   register() {

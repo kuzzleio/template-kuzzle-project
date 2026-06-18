@@ -17,12 +17,12 @@
         "lib/core/*"
       ]
     },
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "target": "ES6",
+    "target": "ES2022",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "module": "ESNext",
+    "module": "NodeNext",
     "types": ["vitest/globals", "node"]
   },
   "rootDir": ".",

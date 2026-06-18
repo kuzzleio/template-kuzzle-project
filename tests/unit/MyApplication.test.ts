@@ -1,6 +1,6 @@
-import { MyApplication, MyApplicationConfig } from "../../lib/MyApplication";
+import { MyApplication, MyApplicationConfig } from "../../lib/MyApplication.js";
 import { Plugin } from "kuzzle";
-import { appSettings } from "./utils";
+import { appSettings } from "./utils.js";
 
 // We need to supress the singleton behavior of the Backend class for unit testing purpose
 Reflect.defineProperty(globalThis, "kuzzle", {

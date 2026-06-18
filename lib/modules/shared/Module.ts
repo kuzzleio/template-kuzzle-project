@@ -1,4 +1,4 @@
-import { MyApplication } from "#MyApplication";
+import { MyApplication } from "../../MyApplication.js";
 
 export abstract class Module<App extends MyApplication = MyApplication> {
   constructor(protected readonly app: App) {}

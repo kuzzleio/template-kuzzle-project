@@ -41,11 +41,22 @@ Requirement:
  - Docker
  - Docker-Compose
 
+## Build
+
+The project is compiled as native ESM and the emitted JavaScript must keep `.js` extensions on internal imports.
+
+```bash
+npm install
+npm run build
+```
+
 # Usage
 
 ```bash
 docker compose up -d
 ```
+
+The compose startup flow now installs dependencies and runs `npm run dev`, which builds TypeScript in watch mode and restarts the app from `dist/app.js` whenever sources change. The removed `start.sh` script is no longer required.
 
 ## Use the framework
 
@@ -109,4 +120,3 @@ Our teams will be able to meet your needs in terms of expertise and multi-techno
 ## License
 
 Kuzzle is published under [Apache 2 License](./LICENSE.md).
-

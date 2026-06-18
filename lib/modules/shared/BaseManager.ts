@@ -1,6 +1,6 @@
 import { EmbeddedSDK } from "kuzzle";
 
-import { MyApplication } from "#MyApplication";
+import { MyApplication } from "../../MyApplication.js";
 
 export class BaseManager {
   public app: MyApplication;

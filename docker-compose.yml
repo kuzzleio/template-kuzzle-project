@@ -1,7 +1,7 @@
 services:
   kuzzle:
     image: kuzzleio/kuzzle-runner:24-trixie-slim
-    command: sh /var/app/start.sh api
+    command: npm run dev
     volumes:
       - .:/var/app
       - ~/.npmrc:/root/.npmrc
