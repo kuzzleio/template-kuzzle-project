@@ -2,21 +2,13 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "listEmittedFiles": true,
-    "baseUrl": ".",
+    "rootDir": ".",
     "sourceMap": true,
     "outDir": "dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
     "strictPropertyInitialization": false,
-    "paths": {
-      "#*": [
-        "lib/*"
-      ],
-      "#core/*": [
-        "lib/core/*"
-      ]
-    },
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "target": "ES2022",
@@ -25,7 +17,6 @@
     "module": "NodeNext",
     "types": ["vitest/globals", "node"]
   },
-  "rootDir": ".",
   "include": [
     "app.ts",
     "lib/**/*.ts",
