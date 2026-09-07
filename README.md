@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/7868838/103797784-32337580-5049-11eb-8917-3fcf4487644c.png"/>
 </p>
 <p align="center">
-  <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/kuzzleio/template-kuzzle-project/master">
+  <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/kuzzleio/template-kuzzle-project/stable">
   <a href="https://github.com/kuzzleio/kuzzle/blob/master/LICENSE">
     <img alt="undefined" src="https://img.shields.io/github/license/kuzzleio/kuzzle.svg?style=flat">
   </a>
@@ -33,60 +33,102 @@ With Kuzzle, it is possible to deploy applications that can serve tens of thousa
 
 Check out our [support plans](https://kuzzle.io/pricing/).
 
-## Installation and run
+## Requirements
 
-Requirement:
- - Node.js = 18
- - NPM = 10.1.0
- - Docker
- - Docker-Compose
+ - Node.js `>= 20 < 25` — the CI and the Docker images use **24**
+ - npm
+ - Docker with the Compose plugin
 
-## Build
+## Install and run
 
-The project is compiled as native ESM and the emitted JavaScript must keep `.js` extensions on internal imports.
+Dependencies are installed on your machine and shared with the container through a volume, so install them first:
 
 ```bash
 npm install
-npm run build
-```
-
-# Usage
-
-```bash
 docker compose up -d
 ```
 
-The compose startup flow now installs dependencies and runs `npm run dev`, which builds TypeScript in watch mode and restarts the app from `dist/app.js` whenever sources change. The removed `start.sh` script is no longer required.
+Compose starts three services — `kuzzle` (the app, via `npm run dev`), `redis` and `elasticsearch` — and Kuzzle is then reachable on http://localhost:7512.
+
+`npm run dev` runs `tsx watch app.ts`: it executes the TypeScript sources directly and restarts on change. It never writes to `dist/`, so there is nothing to build for the dev loop.
+
+## Build
+
+The project is compiled as native ESM and the emitted JavaScript keeps `.js` extensions on internal imports.
+
+```bash
+npm run build      # tsc --build tsconfig.build.json -> dist/app.js + dist/lib/
+```
+
+Two TypeScript configs are used on purpose:
+
+| File | Used by | Scope |
+| --- | --- | --- |
+| `tsconfig.json` | your editor, `npm run test:types` | `app.ts`, `lib/`, `tests/`, `vitest.config.ts` |
+| `tsconfig.build.json` | `npm run build`, the `Dockerfile` | `app.ts`, `lib/` only — tests stay out of the production image |
+
+## Checks
+
+```bash
+npm run lint         # eslint, driven by eslint-plugin-kuzzle
+npm run test:types   # tsc --noEmit, sources and tests
+npm test             # vitest
+```
+
+> The lint toolchain is version-locked: `eslint-plugin-kuzzle@0.0.15` requires `eslint >= 8.50 < 9` and `typescript >= 5.2 < 5.5`. Bumping TypeScript past 5.4 requires migrating to the plugin's `eslint-9` release and a flat `eslint.config.js`.
+
+## Production image
+
+```bash
+docker build --build-arg "KUZZLE_ENV=local" -t my-kuzzle-app .
+```
+
+`KUZZLE_ENV` (`local` | `main`) selects which `environments/<env>/kuzzlerc` is embedded as `/var/app/.kuzzlerc`. See the [configuration guide](https://docs.kuzzle.io/core/2/guides/advanced/configuration/).
 
 ## Use the framework
 
-Your first Kuzzle application is inside the `app.ts` file.
+`app.ts` only instantiates and starts `MyApplication` (`lib/MyApplication.ts`), a `Backend` subclass. Business code is organised in **modules**, not registered inline.
 
-For example, you can add a new [API Controller](https://docs.kuzzle.io/core/2/guides/develop-on-kuzzle/api-controllers):
-
-```ts
-import { Backend } from 'kuzzle';
-
-const app = new Backend('playground');
-
-app.controller.register('greeting', {
-  actions: {
-    sayHello: {
-      handler: async request => `Hello, ${request.input.args.name}`
-    }
-  }
-});
-
-app.start()
-  .then(() => {
-    app.log.info('Application started');
-  })
-  .catch(console.error);
+```
+lib/
+├── MyApplication.ts              # Backend subclass — wire new modules in registerModules()
+├── modules/
+│   ├── shared/                   # Module + BaseManager base classes
+│   └── example/
+│       ├── exampleModule.ts      # register() before start, init() after start
+│       ├── exampleController.ts  # API surface, declared with decorators
+│       ├── exampleManager.ts     # business logic
+│       └── examplePipes.ts       # pipes and hooks
+└── utils/decorators/             # @ApiController / @ApiAction / @ApiRoute
 ```
 
-Now try to call your new API action by:
- - opening the generated URL in your browser: http://localhost:7512/_/greeting/say-hello?name=Yagmur
- - using Kourou: `npx kourou greeting:sayHello --arg name=Yagmur`
+A controller declares its actions and their HTTP routes through decorators:
+
+```ts
+@ApiController("example", { routePrefix: "example" })
+export class ExampleController extends Controller {
+  public exampleManager = new ExampleManager(global.app as MyApplication);
+
+  @ApiAction("sayHello")
+  @ApiRoute({ verb: "get", path: "/_hello", openapi: { /* ... */ } })
+  async sayHello(request: KuzzleRequest): Promise<string> {
+    return this.exampleManager.sayHello(request.getString("name"));
+  }
+}
+```
+
+`routePrefix` is prepended to each declared `path`, and Kuzzle serves application routes under `/_/`. The example above is reachable three ways:
+
+```bash
+curl "http://localhost:7512/_/example/_hello?name=Yagmur"
+curl -X POST http://localhost:7512/_query -H 'Content-Type: application/json' \
+  -d '{"controller":"example","action":"sayHello","name":"Yagmur"}'
+npx kourou example:sayHello --arg name=Yagmur
+```
+
+To add a module: create `lib/modules/<name>/` on the model of `example/`, then push it in `MyApplication.registerModules()`.
+
+See also the [API Controllers guide](https://docs.kuzzle.io/core/2/guides/develop-on-kuzzle/api-controllers).
 
 Learn how to [Write an Application](https://docs.kuzzle.io/core/2/guides/getting-started/write-application/).
 
@@ -119,4 +161,4 @@ Our teams will be able to meet your needs in terms of expertise and multi-techno
 
 ## License
 
-Kuzzle is published under [Apache 2 License](./LICENSE.md).
+Kuzzle is published under [Apache 2 License](https://github.com/kuzzleio/kuzzle/blob/master/LICENSE).
