@@ -6,9 +6,9 @@ WORKDIR /var/app
 COPY . .
 
 
-RUN npm install \
+RUN npm ci \
   && npm run build \
-  && npm install --omit=dev
+  && npm ci --omit=dev
 
 FROM node:24-trixie-slim
 
