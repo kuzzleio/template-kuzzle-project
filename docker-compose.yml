@@ -24,7 +24,7 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - DEBUG=${DEBUG:-none}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://api:7512/_healthcheck"]
+      test: ["CMD", "curl", "-f", "http://localhost:7512/_healthcheck"]
       timeout: 5s
       interval: 5s
       retries: 30
