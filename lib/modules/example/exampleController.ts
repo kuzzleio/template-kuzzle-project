@@ -1,7 +1,11 @@
 import { BadRequestError, Controller, KuzzleRequest } from "kuzzle";
 import { MyApplication } from "../../MyApplication.js";
 import { ExampleManager } from "./exampleManager.js";
-import { ApiController, ApiAction, ApiRoute } from "../../utils/decorators/index.js";
+import {
+  ApiController,
+  ApiAction,
+  ApiRoute,
+} from "../../utils/decorators/index.js";
 
 @ApiController("example", {
   routePrefix: "example",

@@ -8,7 +8,5 @@ lib/**/*.d.ts
 lib/**/*.js.map
 lib/**/*.js
 
-
 # tests
 features/**/*.js
-form/
