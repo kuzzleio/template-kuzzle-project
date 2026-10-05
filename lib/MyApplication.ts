@@ -2,6 +2,7 @@ import { Backend } from "kuzzle";
 import { PrometheusPlugin } from "kuzzle-plugin-prometheus";
 
 import { Module } from "./modules/shared/Module.js";
+import { BrowserLogsModule } from "./modules/browserLogs/browserLogsModule.js";
 import { ExampleModule } from "./modules/example/exampleModule.js";
 
 export type MyApplicationConfig = {
@@ -39,6 +40,7 @@ export class MyApplication extends Backend {
   }
 
   registerModules() {
+    this.modules.push(new BrowserLogsModule(this));
     this.modules.push(new ExampleModule(this));
 
     for (const module of this.modules) {
