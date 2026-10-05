@@ -36,7 +36,7 @@ Check out our [support plans](https://kuzzle.io/pricing/).
 ## Requirements
 
  - Node.js `>= 20 < 25` — the CI and the Docker images use **24**
- - npm
+ - npm (11.16 or later to regenerate `package-lock.json`, see [Browser logs](#browser-logs))
  - Docker with the Compose plugin
 
 ## Install and run
@@ -94,6 +94,7 @@ lib/
 ├── MyApplication.ts              # Backend subclass — wire new modules in registerModules()
 ├── modules/
 │   ├── shared/                   # Module + BaseManager base classes
+│   ├── browserLogs/              # receives the frontend logs (browser-logs:push)
 │   └── example/
 │       ├── exampleModule.ts      # register() before start, init() after start
 │       ├── exampleController.ts  # API surface, declared with decorators
@@ -129,6 +130,23 @@ npx kourou example:sayHello --arg name=Yagmur
 To add a module: create `lib/modules/<name>/` on the model of `example/`, then push it in `MyApplication.registerModules()`.
 
 See also the [API Controllers guide](https://docs.kuzzle.io/core/2/guides/develop-on-kuzzle/api-controllers).
+
+### Browser logs
+
+`BrowserLogsModule` (`lib/modules/browserLogs/`) registers the `browser-logs:push` action (`POST /_/browser-logs/_push`) of [kuzzle-logger](https://docs.kuzzle.io/modules/logger/1/guides/browser-logs-ingestion/). A frontend using `kuzzle-logger/browser` sends its logs and uncaught errors there, and the application writes them with its own logger, under the `browser` namespace and with `source: "browser"`, next to the backend logs.
+
+```bash
+npx kourou browser-logs:push --body '{"version":1,"entries":[{"level":"error","msg":"Browser logging test","namespace":"web"}]}'
+```
+
+- **Rights:** grant the action to the roles of the frontend users (and to `anonymous` to receive the errors raised before login, see [Anonymous users](https://docs.kuzzle.io/modules/logger/1/guides/browser-logs-ingestion/#anonymous-users)):
+  ```json
+  { "controllers": { "browser-logs": { "actions": { "push": true } } } }
+  ```
+- **Namespaces:** only the namespaces listed in `BROWSER_LOG_NAMESPACES` get their own child logger (`web`, `web:global`, `web:vue` by default). Add the ones your frontend uses.
+- **Frontend:** see [Set up browser logging](https://docs.kuzzle.io/modules/logger/1/guides/browser-logging-setup/).
+
+> Kuzzle 2.59 and earlier install their own `kuzzle-logger` 1.4 for `app.log`. The `overrides` entry of `package.json` keeps a single, recent version: when you change dependencies, regenerate `package-lock.json` with npm 11.16 or later (`npx npm@11.16.0 install`), since some npm versions (11.7, 11.13) ignore `overrides` when they resolve the tree, and check that it holds a single `node_modules/kuzzle-logger`.
 
 Learn how to [Write an Application](https://docs.kuzzle.io/core/2/guides/getting-started/write-application/).
 

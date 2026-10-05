@@ -18,6 +18,7 @@ This repository is a Kuzzle application template built in TypeScript and shipped
 - `lib/` contains the application code.
   - `lib/MyApplication.ts` is the `Backend` subclass. **This is where a new module is wired**, by pushing it in `registerModules()`.
   - `lib/modules/<name>/` groups a module, a controller, a manager and its pipes (see `lib/modules/example/`).
+  - `lib/modules/browserLogs/` registers `browser-logs:push` (`kuzzle-logger/kuzzle`): frontend logs are written with `app.log` under the `browser` namespace. Allowed client namespaces are listed in `BROWSER_LOG_NAMESPACES`.
   - A module extends `lib/modules/shared/Module.ts`: `register()` runs before Kuzzle starts (declare controllers, pipes and hooks), `init()` runs after (the SDK is usable).
   - `lib/utils/decorators/` provides `@ApiController` / `@ApiAction` / `@ApiRoute`, which declare the API surface.
 - `tests/unit/` holds the vitest suites.
@@ -49,6 +50,11 @@ This repository is a Kuzzle application template built in TypeScript and shipped
 - `eslint-plugin-kuzzle` drives the whole config; `.eslintrc.json` only extends its presets.
 - The toolchain is version-locked and the pin is deliberate: `eslint-plugin-kuzzle@0.0.15` peer-requires `eslint >= 8.50 <9` and `typescript >= 5.2 <5.5`. **Do not bump `typescript` past `5.4` without migrating the lint stack**, which means moving to the `eslint-9` dist-tag (`eslint-plugin-kuzzle@1.0.0-eslint-9.x`) and converting `.eslintrc.json` to a flat `eslint.config.js`.
 - `new-cap` warnings on the decorator call sites are expected; only errors break the build.
+
+## Dependency Conventions
+
+- `kuzzle-logger` is a direct dependency (for `kuzzle-logger/kuzzle`) **and** an `overrides` entry (`"$kuzzle-logger"`): Kuzzle 2.59 and earlier pin `kuzzle-logger` 1.4 for `app.log`, and the override keeps a single version. Keep both.
+- Regenerate `package-lock.json` with npm 11.16 or later (`npx npm@11.16.0 install`): npm 11.7 and 11.13 ignore `overrides` when they resolve the tree. Then check the lock holds a single `node_modules/kuzzle-logger` entry. `npm ci` (Docker, CI) installs the lock as is.
 
 ## Docker Conventions
 
